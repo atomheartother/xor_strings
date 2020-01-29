@@ -3,9 +3,9 @@
 #include "options.h"
 #include "string.h"
 
-void	apply_key(char *buffer, char *key, const ssize_t string_len)
+void	apply_key(unsigned char *buffer, const char *key, const ssize_t string_len)
 {
-  const unsigned key_len = strlen(key);
+  const size_t key_len = strlen(key);
   if (!key_len)
     return ;
 
@@ -17,11 +17,11 @@ void	apply_key(char *buffer, char *key, const ssize_t string_len)
     }
 }
 
-void	do_xor(char *key, t_optn *options)
+void	do_xor(const char *key, t_optn *options)
 {
   const size_t BUFFER_SIZE = 1024;
 
-  char		buffer[BUFFER_SIZE + 1];
+  unsigned char		buffer[BUFFER_SIZE + 1];
   ssize_t	len;
   while ((len = read(options->fd, buffer, BUFFER_SIZE)) > 0)
     {
