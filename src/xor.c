@@ -3,18 +3,15 @@
 #include "options.h"
 #include "string.h"
 
-void	apply_key(unsigned char *buffer, const char *key, const ssize_t string_len)
+ssize_t	apply_key(unsigned char *buffer, const char *key, const ssize_t string_len, const size_t key_len, const ssize_t iOffset)
 {
-  const size_t key_len = strlen(key);
-  if (!key_len)
-    return ;
-
-  unsigned i = 0;
+  ssize_t i = 0;
   while (i < string_len)
     {
-      buffer[i] ^= key[i % key_len];
+      buffer[i] ^= key[(i + iOffset) % key_len];
       i++;
     }
+    return (i + iOffset) % key_len;
 }
 
 void	do_xor(const char *key, t_optn *options)
@@ -23,10 +20,13 @@ void	do_xor(const char *key, t_optn *options)
 
   unsigned char		buffer[BUFFER_SIZE + 1];
   ssize_t	len;
+  ssize_t iOffset = 0;
+  const size_t key_len = strlen(key);
+  if (!key_len) return;
   while ((len = read(options->fd, buffer, BUFFER_SIZE)) > 0)
     {
       buffer[len] = 0;
-      apply_key(buffer, key, len);
+      iOffset = apply_key(buffer, key, len, key_len, iOffset);
       write(STDOUT_FILENO, buffer, len);
     }
   if (len == -1)
